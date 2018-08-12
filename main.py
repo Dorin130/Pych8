@@ -3,10 +3,8 @@ import re
 from opcodes import opcodes
 
 
-class Memory:
-    _bytes = None
-
-    def load_ch8(self, filename):
+class Disassembler:
+    def __init__(self, filename):
         with open(filename, 'rb') as f:
             self._bytes = f.read()
 
@@ -19,7 +17,4 @@ class Memory:
                 match = re.search(pattern, word.hex())
                 if match:
                     break
-            if match:
-                print('{0:#06x}: {1}: {2}'.format(addr + i, word.hex(), note.format(**match.groupdict())))
-            else:
-                print('{0:#06x}: {1}: '.format(addr + i, word.hex()))
+            print('{0:#06x}: {1}: {2}'.format(addr + i, word.hex(), note.format(**match.groupdict()) if match else ''))
