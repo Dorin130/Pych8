@@ -1,9 +1,13 @@
+"""
+More info: https://en.wikipedia.org/wiki/CHIP-8#Opcode_table
+"""
+
 opcodes = (
-    (r'00ee'			                                , 'return;'	            ),
-    (r'00e0'			                                , 'disp_clear()'        ),
-	(r'(?P<a>0[0-9a-f]{3})'	                            , ''                    ),
-	(r'1(?P<a>[0-9a-f]{3})'	                            , 'goto 0x0{a};'        ),
-	(r'2(?P<a>[0-9a-f]{3})'                             , '*(0x0{a})()'         ),
+    (r'00ee'                                            , 'return;'             ),
+    (r'00e0'                                            , 'disp_clear()'        ),
+    (r'(?P<a>0[0-9a-f]{3})'                             , ''                    ),
+    (r'1(?P<a>[0-9a-f]{3})'                             , 'goto 0x0{a};'        ),
+    (r'2(?P<a>[0-9a-f]{3})'                             , '*(0x0{a})()'         ),
     (r'3(?P<x>[0-9a-f])(?P<c>[0-9a-f]{2})'              , 'if(V{x}=={c})'       ),
     (r'4(?P<x>[0-9a-f])(?P<c>[0-9a-f]{2})'              , 'if(V{x}!={c})'       ),
     (r'5(?P<x>[0-9a-f])(?P<y>[0-9a-f])0'                , 'if(V{x}==V{y})'      ),
@@ -19,8 +23,8 @@ opcodes = (
     (r'8(?P<x>[0-9a-f])(?P<y>[0-9a-f])7'                , 'V{x}=V{y}-V{x}'      ),
     (r'8(?P<x>[0-9a-f])(?P<y>[0-9a-f])e'                , 'V{x}<<=1 '           ),
     (r'9(?P<x>[0-9a-f])(?P<y>[0-9a-f])0'                , 'if(V{x}!=V{y})'      ),
-    (r'a(?P<a>[0-9a-f]{3})'	                            , 'I=0x0{a}'            ),
-    (r'b(?P<a>[0-9a-f]{3})'	                            , 'PC=V0+0x0{a}'        ),
+    (r'a(?P<a>[0-9a-f]{3})'                             , 'I=0x0{a}'            ),
+    (r'b(?P<a>[0-9a-f]{3})'                             , 'PC=V0+0x0{a}'        ),
     (r'c(?P<x>[0-9a-f])(?P<c>[0-9a-f]{2})'              , 'V{x}=rand()&{c}'     ),
     (r'd(?P<x>[0-9a-f])(?P<y>[0-9a-f])(?P<h>[0-9a-f])'  , 'draw(V{x},V{y},{h})' ),
     (r'e(?P<x>[0-9a-f])9e'                              , 'if(key()==V{x})'     ),
