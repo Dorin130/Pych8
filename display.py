@@ -8,8 +8,8 @@ class Display:
     def draw(self, x, y, data):
         ix, iy = np.meshgrid(np.arange(data.shape[1]), np.arange(data.shape[0]))
 
-        x = (ix + x) % self.display.shape[0]
-        y = (iy + y) % self.display.shape[1]
+        x = (ix + x) % self.display.shape[1]
+        y = (iy + y) % self.display.shape[0]
 
         res = self.display[y, x] & data
 

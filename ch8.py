@@ -12,41 +12,41 @@ More info: https://en.wikipedia.org/wiki/CHIP-8#Opcode_table
 """
 
 opcodes = (
-    (r'00ee'                                , 'return;'                         , 'f_00EE'),
-    (r'00e0'                                , 'disp_clear()'                    , 'f_00E0'),
-    (r'(?P<a>0[0-9a-f]{3})'                 , ''                                , 'f_0NNN'),
-    (r'1(?P<a>[0-9a-f]{3})'                 , 'goto 0x0{a};'                    , 'f_1NNN'),
-    (r'2(?P<a>[0-9a-f]{3})'                 , '*(0x0{a})()'                     , 'f_2NNN'),
-    (r'3(?P<x>[0-9a-f])(?P<c>[0-9a-f]{2})'  , 'if(V{x}=={c})'                   , 'f_3XNN'),
-    (r'4(?P<x>[0-9a-f])(?P<c>[0-9a-f]{2})'  , 'if(V{x}!={c})'                   , 'f_4XNN'),
-    (r'5(?P<x>[0-9a-f])(?P<y>[0-9a-f])0'    , 'if(V{x}==V{y})'                  , 'f_5XY0'),
-    (r'6(?P<x>[0-9a-f])(?P<c>[0-9a-f]{2})'  , 'V{x}={c}'                        , 'f_6XNN'),
-    (r'7(?P<x>[0-9a-f])(?P<c>[0-9a-f]{2})'  , 'V{x}+={c}'                       , 'f_7XNN'),
-    (r'8(?P<x>[0-9a-f])(?P<y>[0-9a-f])0'    , 'V{x}=V{y}'                       , 'f_8XY0'),
-    (r'8(?P<x>[0-9a-f])(?P<y>[0-9a-f])1'    , 'V{x}=V{x}|V{y}'                  , 'f_8XY1'),
-    (r'8(?P<x>[0-9a-f])(?P<y>[0-9a-f])2'    , 'V{x}=V{x}&V{y}'                  , 'f_8XY2'),
-    (r'8(?P<x>[0-9a-f])(?P<y>[0-9a-f])3'    , 'V{x}=V{x}^V{y}'                  , 'f_8XY3'),
-    (r'8(?P<x>[0-9a-f])(?P<y>[0-9a-f])4'    , 'V{x}+=V{y} '                     , 'f_8XY4'),
-    (r'8(?P<x>[0-9a-f])(?P<y>[0-9a-f])5'    , 'V{x}-=V{y}'                      , 'f_8XY5'),
-    (r'8(?P<x>[0-9a-f])(?P<y>[0-9a-f])6'    , 'V{x}>>=1'                        , 'f_8XY6'),
-    (r'8(?P<x>[0-9a-f])(?P<y>[0-9a-f])7'    , 'V{x}=V{y}-V{x}'                  , 'f_8XY7'),
-    (r'8(?P<x>[0-9a-f])(?P<y>[0-9a-f])e'    , 'V{x}<<=1 '                       , 'f_8XYE'),
-    (r'9(?P<x>[0-9a-f])(?P<y>[0-9a-f])0'    , 'if(V{x}!=V{y})'                  , 'f_9XY0'),
-    (r'a(?P<a>[0-9a-f]{3})'                 , 'I=0x0{a}'                        , 'f_ANNN'),
-    (r'b(?P<a>[0-9a-f]{3})'                 , 'PC=V0+0x0{a}'                    , 'f_BNNN'),
-    (r'c(?P<x>[0-9a-f])(?P<c>[0-9a-f]{2})'  , 'V{x}=rand()&{c}'                 , 'f_CXNN'),
-    (r'd(?P<x>[0-9a-f])(?P<y>[0-9a-f])(?P<h>[0-9a-f])', 'draw(V{x},V{y},{h})'   , 'f_DXYN'),
-    (r'e(?P<x>[0-9a-f])9e'                  , 'if(key()==V{x})'                 , 'f_EX9E'),
-    (r'e(?P<x>[0-9a-f])a1'                  , 'if(key()!=V{x})'                 , 'f_EXA1'),
-    (r'f(?P<x>[0-9a-f])07'                  , 'V{x} = get_delay()'              , 'f_FX07'),
-    (r'f(?P<x>[0-9a-f])0a'                  , 'V{x} = get_key() '               , 'f_FX0A'),
-    (r'f(?P<x>[0-9a-f])15'                  , 'delay_timer(V{x})'               , 'f_FX15'),
-    (r'f(?P<x>[0-9a-f])18'                  , 'sound_timer(V{x})'               , 'f_FX18'),
-    (r'f(?P<x>[0-9a-f])1e'                  , 'I+=V{x}'                         , 'f_FX1E'),
-    (r'f(?P<x>[0-9a-f])29'                  , 'I=sprite_addr[V{x}]'             , 'f_FX29'),
-    (r'f(?P<x>[0-9a-f])33'                  , 'set_BCD(V{x})'                   , 'f_FX33'),
-    (r'f(?P<x>[0-9a-f])55'                  , 'reg_dump(V{x},&I)'               , 'f_FX55'),
-    (r'f(?P<x>[0-9a-f])65'                  , 'reg_load(Vx,&I)'                 , 'f_FX65'),
+    (re.compile(r'00ee')                                , 'return;'                         , 'f_00EE'),
+    (re.compile(r'00e0')                                , 'disp_clear()'                    , 'f_00E0'),
+    (re.compile(r'(?P<a>0[0-9a-f]{3})')                 , ''                                , 'f_0NNN'),
+    (re.compile(r'1(?P<a>[0-9a-f]{3})')                 , 'goto 0x0{a};'                    , 'f_1NNN'),
+    (re.compile(r'2(?P<a>[0-9a-f]{3})')                 , '*(0x0{a})()'                     , 'f_2NNN'),
+    (re.compile(r'3(?P<x>[0-9a-f])(?P<c>[0-9a-f]{2})')  , 'if(V{x}=={c})'                   , 'f_3XNN'),
+    (re.compile(r'4(?P<x>[0-9a-f])(?P<c>[0-9a-f]{2})')  , 'if(V{x}!={c})'                   , 'f_4XNN'),
+    (re.compile(r'5(?P<x>[0-9a-f])(?P<y>[0-9a-f])0')    , 'if(V{x}==V{y})'                  , 'f_5XY0'),
+    (re.compile(r'6(?P<x>[0-9a-f])(?P<c>[0-9a-f]{2})')  , 'V{x}={c}'                        , 'f_6XNN'),
+    (re.compile(r'7(?P<x>[0-9a-f])(?P<c>[0-9a-f]{2})')  , 'V{x}+={c}'                       , 'f_7XNN'),
+    (re.compile(r'8(?P<x>[0-9a-f])(?P<y>[0-9a-f])0')    , 'V{x}=V{y}'                       , 'f_8XY0'),
+    (re.compile(r'8(?P<x>[0-9a-f])(?P<y>[0-9a-f])1')    , 'V{x}=V{x}|V{y}'                  , 'f_8XY1'),
+    (re.compile(r'8(?P<x>[0-9a-f])(?P<y>[0-9a-f])2')    , 'V{x}=V{x}&V{y}'                  , 'f_8XY2'),
+    (re.compile(r'8(?P<x>[0-9a-f])(?P<y>[0-9a-f])3')    , 'V{x}=V{x}^V{y}'                  , 'f_8XY3'),
+    (re.compile(r'8(?P<x>[0-9a-f])(?P<y>[0-9a-f])4')    , 'V{x}+=V{y} '                     , 'f_8XY4'),
+    (re.compile(r'8(?P<x>[0-9a-f])(?P<y>[0-9a-f])5')    , 'V{x}-=V{y}'                      , 'f_8XY5'),
+    (re.compile(r'8(?P<x>[0-9a-f])(?P<y>[0-9a-f])6')    , 'V{x}>>=1'                        , 'f_8XY6'),
+    (re.compile(r'8(?P<x>[0-9a-f])(?P<y>[0-9a-f])7')    , 'V{x}=V{y}-V{x}'                  , 'f_8XY7'),
+    (re.compile(r'8(?P<x>[0-9a-f])(?P<y>[0-9a-f])e')    , 'V{x}<<=1 '                       , 'f_8XYE'),
+    (re.compile(r'9(?P<x>[0-9a-f])(?P<y>[0-9a-f])0')    , 'if(V{x}!=V{y})'                  , 'f_9XY0'),
+    (re.compile(r'a(?P<a>[0-9a-f]{3})')                 , 'I=0x0{a}'                        , 'f_ANNN'),
+    (re.compile(r'b(?P<a>[0-9a-f]{3})')                 , 'PC=V0+0x0{a}'                    , 'f_BNNN'),
+    (re.compile(r'c(?P<x>[0-9a-f])(?P<c>[0-9a-f]{2})')  , 'V{x}=rand()&{c}'                 , 'f_CXNN'),
+    (re.compile(r'd(?P<x>[0-9a-f])(?P<y>[0-9a-f])(?P<h>[0-9a-f])'), 'draw(V{x},V{y},{h})'   , 'f_DXYN'),
+    (re.compile(r'e(?P<x>[0-9a-f])9e')                  , 'if(key()==V{x})'                 , 'f_EX9E'),
+    (re.compile(r'e(?P<x>[0-9a-f])a1')                  , 'if(key()!=V{x})'                 , 'f_EXA1'),
+    (re.compile(r'f(?P<x>[0-9a-f])07')                  , 'V{x} = get_delay()'              , 'f_FX07'),
+    (re.compile(r'f(?P<x>[0-9a-f])0a')                  , 'V{x} = get_key() '               , 'f_FX0A'),
+    (re.compile(r'f(?P<x>[0-9a-f])15')                  , 'delay_timer(V{x})'               , 'f_FX15'),
+    (re.compile(r'f(?P<x>[0-9a-f])18')                  , 'sound_timer(V{x})'               , 'f_FX18'),
+    (re.compile(r'f(?P<x>[0-9a-f])1e')                  , 'I+=V{x}'                         , 'f_FX1E'),
+    (re.compile(r'f(?P<x>[0-9a-f])29')                  , 'I=sprite_addr[V{x}]'             , 'f_FX29'),
+    (re.compile(r'f(?P<x>[0-9a-f])33')                  , 'set_BCD(V{x})'                   , 'f_FX33'),
+    (re.compile(r'f(?P<x>[0-9a-f])55')                  , 'reg_dump(V{x},&I)'               , 'f_FX55'),
+    (re.compile(r'f(?P<x>[0-9a-f])65')                  , 'reg_load(Vx,&I)'                 , 'f_FX65'),
 )
 
 
@@ -88,6 +88,11 @@ class Ch8State:
         getattr(self, func)(**{k: int(v, 16) for k, v in args.items()})
         print(func, args)
 
+    def clock(self):
+        if self.delay > 0:
+            self.delay -= np.uint8(1)
+        if self.sound > 0:
+            self.delay -= np.uint8(1)
     """
     00E0 - CLS
     Clear the display.  
@@ -104,7 +109,7 @@ class Ch8State:
     """
     def f_00EE(self, **kwargs):
         self.PC = np.uint16(self.stack[self.SP])
-        self.SP -= np.uint16(1)
+        self.SP -= np.uint8(1)
 
     """
     0nnn - SYS addr
@@ -323,7 +328,7 @@ class Ch8State:
     section 2.4, Display, for more information on the Chip-8 screen and sprites."""
     def f_DXYN(self, **kwargs):
         data = np.unpackbits(self.ram[self.I:self.I + kwargs['h']]).astype(bool).reshape((kwargs['h'],8))
-        self.V[0xf] = np.uint8(1) if self.display.draw(kwargs['x'], kwargs['y'], data) else np.uint8(0)
+        self.V[0xf] = np.uint8(1) if self.display.draw(self.V[kwargs['x']], self.V[kwargs['y']], data) else np.uint8(0)
 
     """
     Ex9E - SKP Vx
@@ -351,31 +356,84 @@ class Ch8State:
     The value of DT is placed into Vx.
     """
     def f_FX07(self, **kwargs):
-        pass
+        self.V[kwargs['x']] = self.delay
 
+    """
+    Fx0A - LD Vx, K
+    Wait for a key press, store the value of the key in Vx.
+    
+    All execution stops until a key is pressed, then the value of that key is stored in Vx.
+    """
     def f_FX0A(self, **kwargs):
         pass
 
+    """
+    Fx15 - LD DT, Vx
+    Set delay timer = Vx.
+    
+    DT is set equal to the value of Vx.
+    """
     def f_FX15(self, **kwargs):
-        pass
+        self.delay = self.V[kwargs['x']]
 
+    """
+    Fx18 - LD ST, Vx
+    Set sound timer = Vx.
+    
+    ST is set equal to the value of Vx.
+    """
     def f_FX18(self, **kwargs):
-        pass
+        self.sound = self.V[kwargs['x']]
 
+    """
+    Fx1E - ADD I, Vx
+    Set I = I + Vx.
+    
+    The values of I and Vx are added, and the results are stored in I.
+    """
     def f_FX1E(self, **kwargs):
-        pass
+        self.V[0xf] = np.uint8(1) if int(self.V[kwargs['x']]) + int(self.I) > 0xfff else np.uint8(0)
+        self.I += np.uint16(self.V[kwargs['x']])
 
+    """
+    Fx29 - LD F, Vx
+    Set I = location of sprite for digit Vx.
+    
+    The value of I is set to the location for the hexadecimal sprite corresponding to the value of Vx. See section 2.4,
+     Display, for more information on the Chip-8 hexadecimal font.
+    """
     def f_FX29(self, **kwargs):
-        pass
+        self.I = np.uint16(self.V[kwargs['x']] * 5)
 
+    """
+    Fx33 - LD B, Vx
+    Store BCD representation of Vx in memory locations I, I+1, and I+2.
+    
+    The interpreter takes the decimal value of Vx, and places the hundreds digit in memory at location in I, the tens digit
+    at location I+1, and the ones digit at location I+2.
+    """
     def f_FX33(self, **kwargs):
-        pass
+        num = str(self.V[kwargs['x']]).zfill(3)
+        for i in range(3):
+            self.ram[self.I + i] = np.uint8(num[i])
 
+    """
+    Fx55 - LD [I], Vx
+    Store registers V0 through Vx in memory starting at location I.
+    
+    The interpreter copies the values of registers V0 through Vx into memory, starting at the address in I.
+    """
     def f_FX55(self, **kwargs):
-        pass
+        for i in range(kwargs['x']):
+            self.ram[self.I + i] = np.uint8(self.V[i])
 
+
+    """
+    Fx65 - LD Vx, [I]
+    Read registers V0 through Vx from memory starting at location I.
+    
+    The interpreter reads values from memory starting at location I into registers V0 through Vx.
+    """
     def f_FX65(self, **kwargs):
-        pass
-
-    def f_1NNN(self, **kwargs):
-        pass
+        for i in range(kwargs['x']):
+            self.V[i] = np.uint8(self.ram[self.I + i])
