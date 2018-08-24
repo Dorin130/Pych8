@@ -2,7 +2,9 @@ import re
 
 import numpy as np
 import display
+import pygame
 from font import font
+from settings import KEYS, sound_wave
 
 # ignore all numpy runtime errors (like overflows)
 np.seterr(all='ignore')
@@ -59,6 +61,7 @@ def get_inst(byte_str, ops=opcodes):
 
 class Ch8State:
     def __init__(self):
+        self.running = True
         self.V = np.zeros(16, dtype='uint8')
         self.I = np.uint16()
         self.SP = np.uint8()
@@ -66,9 +69,12 @@ class Ch8State:
         self.delay = np.uint8()
         self.sound = np.uint8()
         self.display = display.Display()
-
+        self.keys = np.zeros(16, dtype='bool')
+        #sound device
+        self.sound_dev = pygame.sndarray.make_sound(sound_wave)
         self.ram = np.zeros(4096, dtype='uint8')
         self.stack = np.zeros(16, dtype='uint16')
+
 
         # initialize the font
         i = 0
@@ -86,20 +92,29 @@ class Ch8State:
         func, args = get_inst(instr)
         self.PC += np.uint16(2)
         getattr(self, func)(**{k: int(v, 16) for k, v in args.items()})
-        print(func, args)
+        #print(self.V[0], self.V[1])
+        #print(func, args)
 
     def clock(self):
-        if self.delay > 0:
+        if self.sound == 0:
+            self.sound_dev.stop()
+        if self.delay > 0 and self.running:
             self.delay -= np.uint8(1)
-        if self.sound > 0:
-            self.delay -= np.uint8(1)
+        if self.sound > 0 and self.running:
+            self.sound -= np.uint8(1)
+
+
+    def process_key(self, event_type, event_key):
+        # print(KEYS[event_key])
+        self.keys[KEYS[event_key]] = True if event_type == pygame.KEYDOWN else False
+
     """
     00E0 - CLS
     Clear the display.  
     """
     def f_00E0(self, **kwargs):
         self.display.clear()
-        print('Clear Screen!')
+        #print('Clear Screen!')
 
     """
     00EE - RET
@@ -118,7 +133,7 @@ class Ch8State:
     This instruction is only used on the old computers on which Chip-8 was originally implemented. It is ignored by modern interpreters.
     """
     def f_0NNN(self, **kwargs):
-        print('syscall', kwargs)
+        pass #print('syscall', kwargs)
 
     """
     1nnn - JP addr
@@ -338,7 +353,8 @@ class Ch8State:
     PC is increased by 2.
     """
     def f_EX9E(self, **kwargs):
-        pass
+        if self.keys[self.V[kwargs['x']]]:
+            self.PC += np.uint16(2)
 
     """
     ExA1 - SKNP Vx
@@ -347,7 +363,9 @@ class Ch8State:
     Checks the keyboard, and if the key corresponding to the value of Vx is currently in the up position, PC is increased by 2.
     """
     def f_EXA1(self, **kwargs):
-        pass
+        if not self.keys[self.V[kwargs['x']]]:
+            self.PC += np.uint16(2)
+
 
     """
     Fx07 - LD Vx, DT
@@ -365,7 +383,13 @@ class Ch8State:
     All execution stops until a key is pressed, then the value of that key is stored in Vx.
     """
     def f_FX0A(self, **kwargs):
-        pass
+        if True in set(self.keys):
+            self.V[kwargs['x']] = np.uint8(np.nonzero(self.keys == True)[0][0])
+            self.running = True
+        else:
+            self.running = False
+            self.PC -= np.uint16(2)
+
 
     """
     Fx15 - LD DT, Vx
@@ -384,6 +408,7 @@ class Ch8State:
     """
     def f_FX18(self, **kwargs):
         self.sound = self.V[kwargs['x']]
+        self.sound_dev.play(-1)
 
     """
     Fx1E - ADD I, Vx
@@ -424,7 +449,7 @@ class Ch8State:
     The interpreter copies the values of registers V0 through Vx into memory, starting at the address in I.
     """
     def f_FX55(self, **kwargs):
-        for i in range(kwargs['x']):
+        for i in range(kwargs['x'] + 1):
             self.ram[self.I + i] = np.uint8(self.V[i])
 
 
@@ -435,5 +460,5 @@ class Ch8State:
     The interpreter reads values from memory starting at location I into registers V0 through Vx.
     """
     def f_FX65(self, **kwargs):
-        for i in range(kwargs['x']):
+        for i in range(kwargs['x'] + 1):
             self.V[i] = np.uint8(self.ram[self.I + i])

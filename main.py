@@ -1,31 +1,55 @@
-import pygame
-import numpy as np
+import time
+import argparse
+from settings import *
 from ch8 import Ch8State
 
-SCALE = 8
 
-ch8 = Ch8State()
-ch8.load_ram("roms/programs/Random Number Test [Matthew Mikolay, 2010].ch8")
+def main():
+    pygame.mixer.pre_init(SAMPLERATE, -16, 1)
+    pygame.init()
 
-pygame.init()
-screen = pygame.display.set_mode((64*SCALE, 32*SCALE))
-CPU_TICK, t_tick = pygame.USEREVENT + 1, 2
-CLOCK, t_clock = pygame.USEREVENT + 1, 17
-pygame.time.set_timer(CPU_TICK, t_tick)
-pygame.time.set_timer(CPU_TICK, t_clock)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("rom", help="rom file")
+    args = parser.parse_args()
 
-while True:
-    if pygame.event.get(pygame.QUIT): break
-    for e in pygame.event.get():
-        if e.type == CPU_TICK:
+    rom = args.rom
+    ch8 = Ch8State()
+    ch8.load_ram(rom)
+
+    pygame.display.set_caption('Pych8')
+    screen = pygame.display.set_mode((64 * SCALE, 32 * SCALE))
+
+    t_step = time.monotonic()
+    t_clock = time.monotonic()
+
+    while True:
+        if pygame.event.get(pygame.QUIT): break
+
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                ch8 = Ch8State()
+                ch8.load_ram(rom)
+            if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
+                if event.key in KEYS.keys():
+                    ch8.process_key(event.type, event.key)
+
+        if time.monotonic() - t_step >= STEP_PERIOD:
             ch8.step()
-        if e.type == CLOCK:
+            t_step = time.monotonic()
+        if time.monotonic() - t_clock >= CLOCK_PERIOD:
             ch8.clock()
+            t_clock = time.monotonic()
 
-    arr = np.full((32 , 64), 255, dtype="int")
-    mask = ch8.display.get_display()
-    arr[~mask] = 0
+        if ch8.display.change:
+            ch8.display.change = False
+            arr = np.full((32, 64), 255, dtype="int")
+            mask = ch8.display.get_display()
+            arr[~mask] = 0
 
-    surface = pygame.transform.scale(pygame.surfarray.make_surface(arr.T), (64*SCALE, 32*SCALE))
-    screen.blit(surface, (0, 0))
-    pygame.display.flip()
+            surface = pygame.transform.scale(pygame.surfarray.make_surface(arr.T), (64 * SCALE, 32 * SCALE))
+            screen.blit(surface, (0, 0))
+            pygame.display.flip()
+
+
+if __name__ == "__main__":
+    main()
